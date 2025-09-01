@@ -1,6 +1,7 @@
 from enum import Enum
+from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 class EditorType(str, Enum):
@@ -18,12 +19,12 @@ class EditorType(str, Enum):
     STANDARD_WINDOW = "Standard Window"
     SPACE = "Space"
 
-class LabelCreateRequest(BaseModel):
-    image_url: str
-    name: str
-    type: EditorType
-    tags: list[str]
-    description: str
+class CreateLabelRequest(BaseModel):
+    image_url: HttpUrl
+    name: Optional[str] = None
+    type: Optional[EditorType] = None
+    tags: Optional[list[str]] = list()
+    description: Optional[str] = None
 
 class NameResponse(BaseModel):
     name: str

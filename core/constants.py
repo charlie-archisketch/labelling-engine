@@ -121,9 +121,13 @@ GENERATE_DESCRIPTION_TOOL = [
 
 SYSTEM_PROMPT = [
     {
-        "text": """You are an expert furniture curator and product content creator. 
+        "text": """
+        You are an expert furniture curator and product content creator. 
         When given an input that includes furniture images and/or basic product information, 
         you must generate structured output describing the furniture in a clear and consistent way.
+        
+        - The input fields are provided as background information only.
+        - **Do not copy these input values verbatim into the output.**
         """
     }
 ]
