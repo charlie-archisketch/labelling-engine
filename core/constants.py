@@ -34,19 +34,19 @@ GENERATE_TYPE_TOOL = [
                             You must classify an item into exactly one of the following categories. 
                             Do  not generate any values outside of the given labels.
 
-                            - FLOOR_ITEM : products placed on the floor (e.g., carpet, mat)
-                            - STANDING_ITEM : products standing on the floor (e.g., chair, desk, sofa)
-                            - WALL_ITEM : products attached to the wall (e.g., wall cabinet, frame, wall shelf)
-                            - CEILING_ITEM : products attached to the ceiling (e.g., ceiling light, mobile)
-                            - SWING_DOOR : hinged doors (open/close by swinging)
-                            - SLIDING_DOOR : sliding doors
-                            - FOLDING_DOOR : folding doors
-                            - GARAGE_DOOR : garage doors
-                            - SWING_WINDOW : hinged windows (open/close by swinging)
-                            - SLIDING_WINDOW : sliding windows
-                            - FOLDING_WINDOW : folding windows
-                            - STANDARD_WINDOW : standard windows
-                            - SPACE : a space/room itself
+                            - Floor Item : products placed on the floor (e.g., carpet, mat)
+                            - Standing Item : products standing on the floor (e.g., chair, desk, sofa)
+                            - Wall Item : products attached to the wall (e.g., wall cabinet, frame, wall shelf)
+                            - Ceiling Item : products attached to the ceiling (e.g., ceiling light, mobile)
+                            - Swing Door : hinged doors (open/close by swinging)
+                            - Sliding Door : sliding doors
+                            - Folding Door : folding doors
+                            - Garage Door : garage doors
+                            - Swing Window : hinged windows (open/close by swinging)
+                            - Sliding Window : sliding windows
+                            - Folding Window : folding windows
+                            - Standard Window : standard windows
+                            - Space : a space/room itself
                             """,
                             "minLength": 1,
                             "maxLength": 20

@@ -1,4 +1,5 @@
 import json
+import os
 
 import boto3
 from dotenv import load_dotenv
@@ -35,21 +36,15 @@ def _safe_prompt_values(req: CreateLabelRequest) -> dict:
     }
 
 
-def _extract_tool_input(resp: dict, tool_name: str, key: str):
-    contents = resp.get("output", {}).get("message", {}).get("content", [])
-    for item in contents:
-        if isinstance(item, dict) and item.get("toolUse"):
-            tool_use = item["toolUse"]
-            if tool_use.get("name") == tool_name:
-                return tool_use.get("input", {}).get(key)
-    return None
+def _extract_tool_input(resp: dict, field: str):
+    return resp["output"]["message"]["content"][0]["toolUse"]["input"][field]
 
 
 def generate_product_name(request: CreateLabelRequest) -> NameResponse:
     fmt, image = image_util.get_image_from_url(str(request.image_url))
 
     resp = bedrock.converse(
-        modelId="us.amazon.nova-pro-v1:0",
+        modelId=os.getenv("BEDROCK_MODEL_ID"),
         system=SYSTEM_PROMPT,
         messages=[{
             "role": "user",
@@ -65,7 +60,7 @@ def generate_product_name(request: CreateLabelRequest) -> NameResponse:
     )
 
     print(json.dumps(resp, ensure_ascii=False, indent=2))
-    name = _extract_tool_input(resp, "generate_furniture_name", "name")
+    name = _extract_tool_input(resp, "name")
 
     return NameResponse(name=name)
 
@@ -74,7 +69,7 @@ def generate_product_type(request: CreateLabelRequest) -> TypeResponse:
     fmt, image = image_util.get_image_from_url(str(request.image_url))
 
     resp = bedrock.converse(
-        modelId="us.amazon.nova-pro-v1:0",
+        modelId=os.getenv("BEDROCK_MODEL_ID"),
         system=SYSTEM_PROMPT,
         messages=[{
             "role": "user",
@@ -90,13 +85,9 @@ def generate_product_type(request: CreateLabelRequest) -> TypeResponse:
     )
 
     print(json.dumps(resp, ensure_ascii=False, indent=2))
-    type_str = _extract_tool_input(resp, "generate_furniture_type", "type")
-    if not type_str:
-        raise RuntimeError("유형 생성 결과를 파싱하지 못했습니다.")
-    try:
-        type_value = EditorType[type_str]
-    except KeyError:
-        raise RuntimeError(f"알 수 없는 유형: {type_str}")
+    type_str = str(_extract_tool_input(resp, "type"))
+    type_value = EditorType(type_str)
+
     return TypeResponse(type=type_value)
 
 
@@ -104,7 +95,7 @@ def generate_product_tags(request: CreateLabelRequest) -> TagsResponse:
     fmt, image = image_util.get_image_from_url(str(request.image_url))
 
     resp = bedrock.converse(
-        modelId="us.amazon.nova-pro-v1:0",
+        modelId=os.getenv("BEDROCK_MODEL_ID"),
         system=SYSTEM_PROMPT,
         messages=[{
             "role": "user",
@@ -120,7 +111,8 @@ def generate_product_tags(request: CreateLabelRequest) -> TagsResponse:
     )
 
     print(json.dumps(resp, ensure_ascii=False, indent=2))
-    tags = _extract_tool_input(resp, "generate_furniture_tags", "tags") or []
+    tags = _extract_tool_input(resp, "tags")
+
     return TagsResponse(tags=tags)
 
 
@@ -128,12 +120,12 @@ def generate_product_description(request: CreateLabelRequest) -> DescriptionResp
     fmt, image = image_util.get_image_from_url(str(request.image_url))
 
     resp = bedrock.converse(
-        modelId="us.amazon.nova-pro-v1:0",
+        modelId=os.getenv("BEDROCK_MODEL_ID"),
         system=SYSTEM_PROMPT,
         messages=[{
             "role": "user",
             "content": [
-                {"text": USER_PROMPT_TEMPLATE.format(**_safe_prompt_values(request), prompt="이 정보를 바탕으로 가구의 설명을 상세히 생성해줘")},
+                {"text": USER_PROMPT_TEMPLATE.format(**_safe_prompt_values(request), prompt="이 정보를 바탕으로 가구를 상세히 설명해줘")},
                 {"image": {"format": fmt, "source": {"bytes": image}}},
             ],
         }],
@@ -144,6 +136,6 @@ def generate_product_description(request: CreateLabelRequest) -> DescriptionResp
     )
 
     print(json.dumps(resp, ensure_ascii=False, indent=2))
-    description = _extract_tool_input(resp, "generate_furniture_description", "description")
+    description = _extract_tool_input(resp, "description")
 
     return DescriptionResponse(description=description)

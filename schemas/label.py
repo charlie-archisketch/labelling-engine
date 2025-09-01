@@ -1,10 +1,10 @@
-from enum import Enum
+from enum import StrEnum
 from typing import Optional
 
 from pydantic import BaseModel, HttpUrl
 
 
-class EditorType(str, Enum):
+class EditorType(StrEnum):
     FLOOR_ITEM = "Floor Item"
     STANDING_ITEM = "Standing Item"
     WALL_ITEM = "Wall Item"
